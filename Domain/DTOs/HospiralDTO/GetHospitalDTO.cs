@@ -10,7 +10,4 @@ public class GetHospitalDTO
     public string TerritoryCode { get; set; }
     public string DistrictCode { get; set; }
     public string CityCode { get; set; }
-
-    public bool IsDeleted { get; set; } = false;
-
 }
