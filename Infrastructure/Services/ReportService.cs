@@ -12,15 +12,17 @@ public class ReportService(DataContext context)
 {
     public async Task<Response<HospitalReportDto>> GetHospitalReportAsync(GetReportFilter reportFilter)
     {
-        if (reportFilter.DateFrom > reportFilter.DateTo
-            || reportFilter.DateTo > DateTime.UtcNow)
+        var dateFromUtc = DateTime.SpecifyKind(reportFilter.DateFrom, DateTimeKind.Utc);
+        var dateToUtc = DateTime.SpecifyKind(reportFilter.DateTo, DateTimeKind.Utc);
+
+        if (dateFromUtc > dateToUtc || dateToUtc > DateTime.UtcNow)
             return new Response<HospitalReportDto>(HttpStatusCode.BadRequest, "Invalid date range");
 
         var hospital = await context.Hospitals.FirstOrDefaultAsync(h => h.RegistrationNumber == reportFilter.HospitalRegistrationNumber && !h.IsDeleted);
         if (hospital == null)
             return new Response<HospitalReportDto>(HttpStatusCode.BadRequest, "Hospital not found");
 
-        var startYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
+        var startYear = DateTime.SpecifyKind(new DateTime(DateTime.UtcNow.Year, 1, 1), DateTimeKind.Utc);
         var now = DateTime.UtcNow;
 
         var hospitalReportDto = new HospitalReportDto
@@ -33,35 +35,44 @@ public class ReportService(DataContext context)
             CityCode = hospital.CityCode,
 
             TotalPatientsInPeriod = await context.Patients
-                .Where(p => p.RecordDate >= reportFilter.DateFrom && p.RecordDate <= reportFilter.DateTo)
+                .Where(p => p.RecordDate >= dateFromUtc && p.RecordDate <= dateToUtc && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             TotalPatientsFromYearStart = await context.Patients
-                .Where(p => p.RecordDate >= startYear && p.RecordDate <= now)
+                .Where(p => p.RecordDate >= startYear && p.RecordDate <= now && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             RecoveredInPeriod = await context.Patients
-                .Where(p => p.RecordDate >= reportFilter.DateFrom && p.RecordDate <= reportFilter.DateTo
-                        && p.DischargeDate <= reportFilter.DateTo && p.DischargeDate >= reportFilter.DateFrom)
+                .Where(p => p.RecordDate >= dateFromUtc && p.RecordDate <= dateToUtc
+                        && p.DischargeDate <= dateToUtc && p.DischargeDate >= dateFromUtc
+                        && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             RecoveredFromYearStart = await context.Patients
                 .Where(p => p.RecordDate >= startYear && p.RecordDate <= now
-                        && p.DischargeDate >= startYear && p.DischargeDate <= now)
+                        && p.DischargeDate >= startYear && p.DischargeDate <= now
+                        && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
 
             FluAndColdCount = await context.Patients
-                .Where(p => p.Disease == DiseaseType.Грипп || p.Disease == DiseaseType.ОРЗ).CountAsync(),
+                .Where(p => (p.Disease == DiseaseType.Грипп || p.Disease == DiseaseType.ОРЗ)
+                            && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
+                .CountAsync(),
             TyphoidCount = await context.Patients
-                .Where(p => p.Disease == DiseaseType.БрюшнойТиф).CountAsync(),
+                .Where(p => p.Disease == DiseaseType.БрюшнойТиф
+                        && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
+                .CountAsync(),
             HepatitisCount = await context.Patients
-                .Where(p => p.Disease == DiseaseType.Гепатит).CountAsync(),
+                .Where(p => p.Disease == DiseaseType.Гепатит
+                        && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
+                .CountAsync(),
             OtherDiseasesCount = await context.Patients
                 .Where(p => p.Disease != DiseaseType.Грипп
                         && p.Disease != DiseaseType.ОРЗ
                         && p.Disease != DiseaseType.БрюшнойТиф
-                        && p.Disease != DiseaseType.Гепатит)
+                        && p.Disease != DiseaseType.Гепатит
+                        && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
 
-            PeriodStart = reportFilter.DateFrom,
-            PeriodEnd = reportFilter.DateTo
+            PeriodStart = dateFromUtc,
+            PeriodEnd = dateToUtc
         };
         
         return new Response<HospitalReportDto>(hospitalReportDto);
