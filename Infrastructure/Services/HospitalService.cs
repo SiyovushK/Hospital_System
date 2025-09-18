@@ -7,6 +7,7 @@ using Domain.Filter;
 using Domain.Response;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using NanoidDotNet;
 
 namespace Infrastructure.Services;
 
@@ -32,50 +33,55 @@ public class HospitalService(DataContext context, IMapper mapper)
 
         return new PagedResponse<List<GetHospitalDTO>>(data, validFilter.PageNumber, validFilter.PageSize, totalCount);
     }
+
     public async Task<Response<GetHospitalDTO>> GetById(string id)
     {
         var hospital = await context.Hospitals
             .AsNoTracking()
+            .ProjectTo<GetHospitalDTO>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(h => h.RegistrationNumber == id);
         if (hospital == null)
             return new Response<GetHospitalDTO>(HttpStatusCode.NotFound, "Hospital not found");
 
-        var result = mapper.Map<GetHospitalDTO>(hospital);
-
-        return new Response<GetHospitalDTO>(result);
+        return new Response<GetHospitalDTO>(hospital);
     }
-    public async Task<Response<string>> CreateAsync(CreateHospitalDTO hospitalDTO)
+    
+    public async Task<Response<GetHospitalDTO>> CreateAsync(CreateHospitalDTO hospitalDTO)
     {
         var hospital = mapper.Map<Hospital>(hospitalDTO);
+        hospital.RegistrationNumber = Nanoid.Generate("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+
         await context.Hospitals.AddAsync(hospital);
         var result = await context.SaveChangesAsync();
         return result > 0
-            ? new Response<string>("Created hospital successfully")
-            : new Response<string>(HttpStatusCode.BadRequest, "Failed to created");
+            ? new Response<GetHospitalDTO>(mapper.Map<GetHospitalDTO>(hospital))
+            : new Response<GetHospitalDTO>(HttpStatusCode.InternalServerError, "Failed to created");
     }
-    public async Task<Response<string>> UpdateAsync(string id, UpdateHospitalDTO hospital)
+
+    public async Task<Response<GetHospitalDTO>> UpdateAsync(string id, UpdateHospitalDTO hospital)
     {
         var existingHospital = await context.Hospitals.FindAsync(id);
         if (existingHospital == null)
-            return new Response<string>(HttpStatusCode.NotFound, "Hospital not found");
+            return new Response<GetHospitalDTO>(HttpStatusCode.NotFound, "Hospital not found");
 
-        mapper.Map(existingHospital, hospital);
+        mapper.Map(hospital, existingHospital);
 
         var result = await context.SaveChangesAsync();
         return result > 0
-            ? new Response<string>("Hospital updated successfully")
-            : new Response<string>(HttpStatusCode.BadRequest, "Failed to update hospital");
+            ? new Response<GetHospitalDTO>(mapper.Map<GetHospitalDTO>(existingHospital))
+            : new Response<GetHospitalDTO>(HttpStatusCode.InternalServerError, "Failed to update hospital");
     }
+    
     public async Task<Response<string>> DeleteAsync(string id)
     {
         var hospital = await context.Hospitals.FindAsync(id);
         if (hospital == null)
-            return new Response<string>(HttpStatusCode.NotFound, "Hospital not found"); 
+            return new Response<string>(HttpStatusCode.NotFound, "Hospital not found");
 
-        context.Hospitals.Remove(hospital);
+        hospital.IsDeleted = true;
         var result = await context.SaveChangesAsync();
         return result > 0
             ? new Response<string>("Hospital deleted successfully")
-            : new Response<string>(HttpStatusCode.BadRequest, "Failed to delete hospital"); 
+            : new Response<string>(HttpStatusCode.InternalServerError, "Failed to delete hospital");
     }
 }

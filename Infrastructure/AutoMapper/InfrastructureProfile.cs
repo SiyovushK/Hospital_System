@@ -7,7 +7,6 @@ namespace Infrastructure.AutoMapper;
 
 public class InfrastructureProfile : Profile
 {
-
     public InfrastructureProfile()
     {
         CreateMap<Patient, GetPatientDTO>();
