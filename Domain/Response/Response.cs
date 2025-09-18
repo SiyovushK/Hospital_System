@@ -9,7 +9,7 @@ public class Response<T>
     public int StatusCode { get; set; }
     public string Message { get; set; }
 
-    public Response(T? data)
+    public Response(T? data, string? message = null)
     {
         IsSuccess = true;
         Data = data;
