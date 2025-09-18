@@ -77,9 +77,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("DischargeDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Disease")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Disease")
+                        .HasColumnType("integer");
 
                     b.Property<string>("HospitalRegistrationNumber")
                         .IsRequired()

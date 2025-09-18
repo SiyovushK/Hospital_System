@@ -34,10 +34,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             entity.Property(p => p.RecordDate).IsRequired();
             entity.Property(p => p.Disease).IsRequired();
         });
-
-        modelBuilder.Entity<Patient>()
-                    .Property(p => p.Disease)
-                    .HasConversion<string>();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

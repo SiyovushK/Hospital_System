@@ -39,7 +39,7 @@ namespace Infrastructure.Migrations
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     RecordDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DischargeDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Disease = table.Column<string>(type: "text", nullable: false),
+                    Disease = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
