@@ -1,5 +1,3 @@
 namespace Domain.DTOs.HospiralDTO;
 
-public class UpdateHospitalDTO : CreateHospitalDTO
-{
-}
+public class UpdateHospitalDTO : CreateHospitalDTO { }
