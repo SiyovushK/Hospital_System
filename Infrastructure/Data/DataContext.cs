@@ -23,7 +23,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
                   .WithOne(p => p.Hospital)
                   .HasForeignKey(p => p.HospitalRegistrationNumber)
                   .HasPrincipalKey(h => h.RegistrationNumber)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Patient>(entity =>
