@@ -9,7 +9,7 @@ public class Response<T>
     public int StatusCode { get; set; }
     public string Message { get; set; }
 
-    public Response(T? data, string? message = null)
+    public Response(T? data)
     {
         IsSuccess = true;
         Data = data;
@@ -19,7 +19,7 @@ public class Response<T>
 
     public Response(HttpStatusCode statusCode, string message)
     {
-        IsSuccess = true;
+        IsSuccess = false;
         Data = default;
         StatusCode = (int)statusCode;
         Message = message;
