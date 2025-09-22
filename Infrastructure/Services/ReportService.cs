@@ -52,22 +52,22 @@ public class ReportService(DataContext context)
                 .CountAsync(),
 
             FluAndColdCount = await context.Patients
-                .Where(p => (p.Disease == DiseaseType.Грипп || p.Disease == DiseaseType.ОРЗ)
+                .Where(p => (p.Disease == DiseaseType.Flu || p.Disease == DiseaseType.Cold)
                             && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             TyphoidCount = await context.Patients
-                .Where(p => p.Disease == DiseaseType.БрюшнойТиф
+                .Where(p => p.Disease == DiseaseType.Fever
                         && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             HepatitisCount = await context.Patients
-                .Where(p => p.Disease == DiseaseType.Гепатит
+                .Where(p => p.Disease == DiseaseType.ARVI
                         && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
             OtherDiseasesCount = await context.Patients
-                .Where(p => p.Disease != DiseaseType.Грипп
-                        && p.Disease != DiseaseType.ОРЗ
-                        && p.Disease != DiseaseType.БрюшнойТиф
-                        && p.Disease != DiseaseType.Гепатит
+                .Where(p => p.Disease != DiseaseType.Flu
+                        && p.Disease != DiseaseType.Cold
+                        && p.Disease != DiseaseType.Fever
+                        && p.Disease != DiseaseType.ARVI
                         && p.HospitalRegistrationNumber == hospital.RegistrationNumber)
                 .CountAsync(),
 
