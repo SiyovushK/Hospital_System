@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 app.MapControllers();
 app.Run();

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Отчет больницы</title>
+  <style>
+    body { font-family: Inter, Arial, sans-serif; margin: 24px; color: #111; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .brand { display:flex; gap:16px; align-items:center; }
+    h1 { margin:0; font-size:20px; }
+    .muted { color:#666; font-size:13px; }
+    .card { border:1px solid #e3e3e3; border-radius:8px; padding:16px; background:#fff; box-shadow: 0 1px 2px rgba(0,0,0,0.03); margin-bottom:16px; }
+    .stats { width:100%; border-collapse:collapse; margin-top:12px; }
+    .stats th, .stats td { padding:10px 8px; border-bottom:1px solid #f0f0f0; text-align:left; font-size:14px; }
+    .stats th { width:50%; color:#333; font-weight:600; background:transparent; }
+    .big { font-size:22px; font-weight:700; }
+    .diseases { display:flex; gap:8px; margin-top:10px; }
+    .disease { flex:1; padding:10px; border-radius:6px; background:#fafafa; border:1px solid #f0f0f0; text-align:center; }
+    .disease .num { font-weight:700; font-size:18px; display:block; margin-bottom:6px; }
+    .controls { display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+    .controls label { font-size:13px; color:#333; margin-right:6px; }
+    input[type="text"], input[type="date"] { padding:8px 10px; border:1px solid #ccc; border-radius:6px; min-width:180px; }
+    button { padding:8px 12px; border-radius:6px; border: none; cursor:pointer; background:#2b6cb0; color:white; font-weight:600; }
+    button.secondary { background:#4a5568; }
+    .error { color:#b00020; font-size:13px; }
+    input.error { border: 1px solid #d9534f; background-color: #fff5f5; color: #d9534f;}
+    input.error::placeholder { color: #d9534f; opacity: 1;}
+
+    @media print {
+      .controls, .print-hide { display:none !important; }
+      .container { max-width:100%; padding:0 18mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="controls print-hide">
+      <div class="reg-row">
+        <label for="regInput">Рег. номер больницы *</label>
+        <input id="regInput" type="text" placeholder="Введите номер больницы" />
+      </div>
+
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <label for="dateFrom">С</label>
+        <input id="dateFrom" type="date" />
+        <label for="dateTo">По</label>
+        <input id="dateTo" type="date" />
+      </div>
+
+      <button id="loadBtn">Загрузить отчет</button>
+      <button id="printBtn" class="secondary">Print / Save as PDF</button>
+      <span id="status" style="margin-left:8px;color:#666;font-size:13px"></span>
+    </div>
+
+    <header style="margin-top: 30px;">
+      <div class="brand">
+        <div>   
+          <h1 id="hospitalName">— Название больницы —</h1>
+          <div style="margin-top:4px; color: rgba(0, 0, 0, 0.784); font-weight: 600;" class="muted" id="hospitalReg">Рег. № —</div>
+        </div>
+      </div>
+
+      <div class="muted" style="text-align:right;">
+        <div style="margin-bottom: 3px;" id="period">Период: —</div>
+        <div id="generated">Дата формирования: —</div>
+      </div>
+    </header>
+
+    <div id="mainCard" class="card">
+      <table class="stats" id="mainStats">
+        <tbody>
+          <tr><th>Всего пациентов в период</th><td id="totalInPeriod" class="big">—</td></tr>
+          <tr><th>Всего пациентов с начала года</th><td id="totalFromYear" class="big">—</td></tr>
+          <tr><th>Выздоровели в период</th><td id="recoveredInPeriod">—</td></tr>
+          <tr><th>Выздоровели с начала года</th><td id="recoveredFromYear">—</td></tr>
+          <tr><th>Процент выздоровлений (в период)</th><td id="percentInPeriod">— %</td></tr>
+          <tr><th>Процент выздоровлений (с начала года)</th><td id="percentFromYear">— %</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:12px;">
+        <strong>Разбивка по заболеваниям</strong>
+        <div class="diseases">
+          <div class="disease">
+            <span class="num" id="fluCount">—</span>
+            <span class="muted">Грипп + ОРЗ</span>
+          </div>
+          <div class="disease">
+            <span class="num" id="typhoidCount">—</span>
+            <span class="muted">Брюшной тиф</span>
+          </div>
+          <div class="disease">
+            <span class="num" id="hepCount">—</span>
+            <span class="muted">Гепатит</span>
+          </div>
+          <div class="disease">
+            <span class="num" id="otherCount">—</span>
+            <span class="muted">Прочие</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div style="display: flex; justify-content: space-between;">
+            <div class="muted">Код министерства: <span id="minCode">—</span></div>
+            <div class="muted">Код района: <span id="district">—</span></div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <div class="muted">Код территории: <span id="territory">—</span></div>
+            <div class="muted">Код города: <span id="city">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/report/hospital-report';
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      const date = new Date(d);
+      if (isNaN(date)) return d;
+      return date.toLocaleDateString('ru-RU');
+    }
+    function fmtNumber(n) {
+      return (n === null || n === undefined) ? '—' : Number(n).toLocaleString('ru-RU');
+    }
+    function safeGetResponseData(resp) {
+      if (!resp) return null;
+      if (resp.data) return resp.data;
+      if (resp.Data) return resp.Data;
+      if (resp.HospitalName || resp.TotalPatientsInPeriod !== undefined) return resp;
+      return null;
+    }
+
+    function render(dto) {  
+      if (!dto) return;
+      document.getElementById('hospitalName').textContent = dto.hospitalName || '—';
+      document.getElementById('hospitalReg').textContent = 'Рег. № ' + (dto.hospitalRegistrationNumber || '—');
+      document.getElementById('period').textContent = 'Период: ' + (fmtDate(dto.periodStart) + ' — ' + fmtDate(dto.periodEnd));
+      document.getElementById('generated').textContent = 'Дата формирования: ' + fmtDate(new Date());
+      document.getElementById('totalInPeriod').textContent = fmtNumber(dto.totalPatientsInPeriod);
+      document.getElementById('totalFromYear').textContent = fmtNumber(dto.totalPatientsFromYearStart);
+      document.getElementById('recoveredInPeriod').textContent = fmtNumber(dto.recoveredInPeriod);
+      document.getElementById('recoveredFromYear').textContent = fmtNumber(dto.recoveredFromYearStart);
+
+      const p1 = (dto.recoveryPercentInPeriod !== undefined && dto.recoveryPercentInPeriod !== null)
+        ? dto.recoveryPercentInPeriod
+        : (dto.totalPatientsInPeriod > 0 ? Math.round(dto.recoveredInPeriod * 10000 / dto.totalPatientsInPeriod) / 100 : 0);
+      const p2 = (dto.recoveryPercentFromYearStart !== undefined && dto.recoveryPercentFromYearStart !== null)
+        ? dto.recoveryPercentFromYearStart
+        : (dto.totalPatientsFromYearStart > 0 ? Math.round(dto.recoveredFromYearStart * 10000 / dto.totalPatientsFromYearStart) / 100 : 0);
+
+      document.getElementById('percentInPeriod').textContent = (p1 !== null ? p1 : '—') + ' %';
+      document.getElementById('percentFromYear').textContent = (p2 !== null ? p2 : '—') + ' %';
+
+      document.getElementById('fluCount').textContent = fmtNumber(dto.fluAndColdCount);
+      document.getElementById('typhoidCount').textContent = fmtNumber(dto.typhoidCount);
+      document.getElementById('hepCount').textContent = fmtNumber(dto.hepatitisCount);
+      document.getElementById('otherCount').textContent = fmtNumber(dto.otherDiseasesCount);
+
+      document.getElementById('minCode').textContent = dto.ministryCode+";" || '—';
+      document.getElementById('territory').textContent = dto.territoryCode+";" || '—';
+      document.getElementById('district').textContent = dto.districtCode+";" || '—';
+      document.getElementById('city').textContent = dto.cityCode+";" || '—';
+    }
+
+    // example to show when API fails
+    const exampleDto = {
+      hospitalName: 'Городская клиническая больница №1',
+      hospitalRegistrationNumber: '123-456',
+      ministryCode: 'MIN-01',
+      territoryCode: 'T-10',
+      districtCode: 'D-5',
+      cityCode: 'C-2',
+      totalPatientsInPeriod: 412,
+      totalPatientsFromYearStart: 3780,
+      recoveredInPeriod: 384,
+      recoveredFromYearStart: 3500,
+      fluAndColdCount: 120,
+      typhoidCount: 2,
+      hepatitisCount: 9,
+      otherDiseasesCount: 281,
+      periodStart: '2025-09-01',
+      periodEnd: '2025-09-30'
+    };
+    
+    const emptyExampleDto = {
+      hospitalName: 'Больница не найдена',
+      hospitalRegistrationNumber: '-',
+      ministryCode: '-',
+      territoryCode: '-',
+      districtCode: '-',
+      cityCode: '-',
+      totalPatientsInPeriod: 0,
+      totalPatientsFromYearStart: 0,
+      recoveredInPeriod: 0,
+      recoveredFromYearStart: 0,
+      fluAndColdCount: 0,
+      typhoidCount: 0,
+      hepatitisCount: 0,
+      otherDiseasesCount: 0,
+      periodStart: '000-00-00',
+      periodEnd: '000-00-00'
+    };
+
+    // -- helpers for dates --
+    function toIsoDateInputValue(date) {
+      // returns yyyy-mm-dd
+      const d = new Date(date);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function sixMonthsAgoDate() {
+      const d = new Date();
+      const day = d.getDate();
+      d.setMonth(d.getMonth() - 6);
+      // Fix for month overflow (e.g., 31 March -> 31 Sep invalid) => clamp
+      if (d.getDate() !== day) {
+        d.setDate(0); // last day of previous month
+      }
+      return d;
+    }
+
+    // initialize inputs with defaults
+    const dateFromInput = document.getElementById('dateFrom');
+    const dateToInput = document.getElementById('dateTo');
+    const regInput = document.getElementById('regInput');
+    const regError = document.getElementById('regError');
+    const statusEl = document.getElementById('status');
+
+    dateToInput.value = toIsoDateInputValue(new Date());
+    dateFromInput.value = toIsoDateInputValue(sixMonthsAgoDate());
+
+    // build query and call API
+    async function loadReport() {
+        const regInput = document.getElementById('regInput');
+        const reg = regInput.value.trim();
+
+        if (!reg) {
+            regInput.classList.add('error');
+            regInput.value = '';
+            regInput.placeholder = 'Обязательное поле';
+            return;
+        }
+
+        regInput.classList.remove('error');
+        regInput.placeholder = 'Введите номер больницы';
+
+      // read dates, send as yyyy-mm-dd
+      const dateFrom = dateFromInput.value;
+      const dateTo = dateToInput.value;
+
+      if (!dateFrom || !dateTo) {
+        statusEl.textContent = 'Укажите даты периода.';
+        return;
+      }
+
+      // Build query using exact filter property names
+      const params = new URLSearchParams({
+        HospitalRegistrationNumber: reg,
+        DateFrom: dateFrom,
+        DateTo: dateTo
+      });
+
+      const url = `${API_BASE}?${params.toString()}`;
+
+      statusEl.textContent = 'Загрузка...';
+      try {
+        const res = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        if (!res.ok) {
+          // try parse json error body or show example
+          try {
+            const errJson = await res.json();
+            console.error('Server error', errJson);
+            statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
+            render(emptyExampleDto);
+          } catch (e) {
+            statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
+            render(emptyExampleDto);
+          }
+          return;
+        }
+
+        const json = await res.json();
+        const dto = safeGetResponseData(json);
+        if (dto) {
+          render(dto);
+          statusEl.textContent = 'Готово.';
+        } else {
+          statusEl.textContent = 'Сервер вернул неожиданный формат — показываю пример данных.';
+          render(emptyExampleDto);
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Ошибка запроса — показываю пример данных. Проверьте CORS и путь API.';
+        render(emptyExampleDto);
+      }
+    }
+
+    document.getElementById('loadBtn').addEventListener('click', loadReport);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    // автозаполнение примера при загрузке страницы (показывает пустой шаблон)
+    render(exampleDto);
+  </script>
+</body>
+</html>
