@@ -2,12 +2,12 @@ namespace Domain.Enums;
 
 public enum DiseaseType
 {
-    Грипп,
-    ОРЗ,
-    БрюшнойТиф,
-    Гепатит,
-    ОРВИ,
-    Туберкулез,
-    Диабет,
-    Другое
+    Flu,
+    Cold,
+    Fever,
+    Hepatitis,
+    ARVI,
+    Tuberculosis,
+    Diabetes,
+    Others
 }
