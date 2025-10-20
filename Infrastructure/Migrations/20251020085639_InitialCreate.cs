@@ -18,10 +18,10 @@ namespace Infrastructure.Migrations
                 {
                     RegistrationNumber = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    MinistryCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    TerritoryCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    DistrictCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    CityCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    MinistryName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TerritoryName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    DistrictName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    CityName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -35,12 +35,13 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    HospitalRegistrationNumber = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    RecordDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DischargeDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    HospitalRegistrationNumber = table.Column<string>(type: "text", nullable: false),
+                    TerritoryName = table.Column<int>(type: "integer", nullable: false),
                     Disease = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RecordDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RecoveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -51,7 +52,7 @@ namespace Infrastructure.Migrations
                         column: x => x.HospitalRegistrationNumber,
                         principalTable: "Hospitals",
                         principalColumn: "RegistrationNumber",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

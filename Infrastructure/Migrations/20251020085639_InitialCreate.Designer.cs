@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250918122339_InitialCreate")]
+    [Migration("20251020085639_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,12 +33,12 @@ namespace Infrastructure.Migrations
                     b.Property<string>("RegistrationNumber")
                         .HasColumnType("text");
 
-                    b.Property<string>("CityCode")
+                    b.Property<string>("CityName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("DistrictCode")
+                    b.Property<string>("DistrictName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
@@ -46,7 +46,7 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("MinistryCode")
+                    b.Property<string>("MinistryName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
@@ -56,7 +56,7 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("TerritoryCode")
+                    b.Property<string>("TerritoryName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
@@ -75,10 +75,7 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DischargeDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Disease")
                         .HasColumnType("integer");
@@ -96,7 +93,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("RecordDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("RecoveryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TerritoryName")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -110,7 +113,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Hospital", "Hospital")
                         .WithMany("Patients")
                         .HasForeignKey("HospitalRegistrationNumber")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Hospital");
