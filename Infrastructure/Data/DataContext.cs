@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -13,11 +14,28 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<Hospital>(entity =>
         {
             entity.HasKey(h => h.RegistrationNumber);
-            entity.Property(h => h.Name).IsRequired().HasMaxLength(255);
-            entity.Property(h => h.MinistryCode).IsRequired().HasMaxLength(50);
-            entity.Property(h => h.TerritoryCode).IsRequired().HasMaxLength(50);
-            entity.Property(h => h.DistrictCode).IsRequired().HasMaxLength(50);
-            entity.Property(h => h.CityCode).IsRequired().HasMaxLength(50);
+
+            entity.Property(h => h.Name)
+                  .IsRequired()
+                  .HasMaxLength(255);
+
+            entity.Property(h => h.MinistryName)
+                  .IsRequired()
+                  .HasMaxLength(50);
+
+            // 🔹 Enum TerritoryName хранится как строка
+            entity.Property(h => h.TerritoryName)
+                  .IsRequired()
+                  .HasMaxLength(50)
+                  .HasConversion<string>();
+
+            entity.Property(h => h.DistrictName)
+                  .IsRequired()
+                  .HasMaxLength(50);
+
+            entity.Property(h => h.CityName)
+                  .IsRequired()
+                  .HasMaxLength(50);
 
             entity.HasMany(h => h.Patients)
                   .WithOne(p => p.Hospital)
@@ -29,9 +47,15 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<Patient>(entity =>
         {
             entity.HasKey(p => p.Id);
+
             entity.Property(p => p.HospitalRegistrationNumber).IsRequired();
-            entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
+
+            entity.Property(p => p.Name)
+                  .IsRequired()
+                  .HasMaxLength(200);
+
             entity.Property(p => p.RecordDate).IsRequired();
+
             entity.Property(p => p.Disease).IsRequired();
         });
     }

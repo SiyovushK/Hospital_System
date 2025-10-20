@@ -1,3 +1,4 @@
+using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,6 @@ public static class DependencyInjection
     {
         services.AddScoped<HospitalService>();
         services.AddScoped<PatientService>();
-        services.AddScoped<ReportService>();
+        services.AddScoped<IReportService, ReportService>();
     }
 }

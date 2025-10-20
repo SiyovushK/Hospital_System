@@ -1,18 +1,52 @@
 using Domain.DTOs.ReportDTO;
-using Domain.Filter;
-using Infrastructure.Services;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ReportService service) : ControllerBase
+public class ReportController(IReportService reportService) : ControllerBase
 {
-    [HttpGet("hospital-report")]
-    public async Task<ActionResult<HospitalReportDto>> GetHospitalReport([FromQuery] GetReportFilter reportFilter)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetStatisticsAllTerritories([FromQuery] DateTime dateFrom,[FromQuery] DateTime dateTo)
     {
-        var response = await service.GetHospitalReportAsync(reportFilter);
-        return StatusCode(response.StatusCode, response);
+        var response = await reportService.GetStatisticsAllTerritories(dateFrom, dateTo);
+        return Ok(response);
+    }
+
+    [HttpGet("firdavsi")]
+    public async Task<IActionResult> GetStatisticsFirdavsi(
+        [FromQuery] DateTime dateFrom,
+        [FromQuery] DateTime dateTo)
+    {
+        var response = await reportService.GetStatisticsFirdavsi(dateFrom, dateTo);
+         return Ok(response);
+    }
+    [HttpGet("shohmansur")]
+    public async Task<IActionResult> GetStatisticsShohmansur(
+        [FromQuery] DateTime dateFrom,
+        [FromQuery] DateTime dateTo)
+    {
+        var response = await reportService.GetStatisticsShohmansur(dateFrom, dateTo);
+        return Ok(response);
+    }
+
+    [HttpGet("sino")]
+    public async Task<IActionResult> GetStatisticsSino(
+        [FromQuery] DateTime dateFrom,
+        [FromQuery] DateTime dateTo)
+    {
+        var response = await reportService.GetStatisticsSino(dateFrom, dateTo);
+         return Ok(response);
+    }
+
+    [HttpGet("somoni")]
+    public async Task<IActionResult> GetStatisticsSomoni(
+        [FromQuery] DateTime dateFrom,
+        [FromQuery] DateTime dateTo)
+    {
+        var response = await reportService.GetStatisticsSomoni(dateFrom, dateTo);
+         return Ok(response);
     }
 }

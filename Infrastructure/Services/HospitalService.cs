@@ -1,7 +1,7 @@
 using System.Net;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain.DTOs.HospiralDTO;
+using Domain.DTOs.HospitalDTO;
 using Domain.Entities;
 using Domain.Filter;
 using Domain.Response;

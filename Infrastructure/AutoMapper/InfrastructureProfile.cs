@@ -1,7 +1,8 @@
 using AutoMapper;
-using Domain.DTOs.HospiralDTO;
+using Domain.DTOs.HospitalDTO;
 using Domain.DTOs.PatientDTO;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Infrastructure.AutoMapper;
 
@@ -15,6 +16,6 @@ public class InfrastructureProfile : Profile
 
         CreateMap<Hospital, GetHospitalDTO>();
         CreateMap<CreateHospitalDTO, Hospital>();
-        CreateMap<UpdateHospitalDTO, Hospital>();
+        CreateMap<UpdateHospitalDTO, Hospital>();    
     }
 }

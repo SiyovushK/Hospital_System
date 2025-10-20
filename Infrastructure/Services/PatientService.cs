@@ -68,9 +68,9 @@ public class PatientService(DataContext context, IMapper mapper)
         if (existingPatient == null)
             return new Response<GetPatientDTO>(HttpStatusCode.NotFound, "Patient not found");
 
-        if (patient.DischargeDate.HasValue)
+        if (string.IsNullOrEmpty(patient.RecordDate.ToString()))
         {
-            if (patient.DischargeDate.Value > DateTime.UtcNow || patient.DischargeDate.Value < existingPatient.RecordDate)
+            if (patient.RecordDate > DateTime.UtcNow || patient.RecordDate < existingPatient.RecordDate)
                 return new Response<GetPatientDTO>(HttpStatusCode.BadRequest, "Invalid discharge date");
         }
 
