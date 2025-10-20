@@ -1,4 +1,4 @@
-using Domain.DTOs.HospiralDTO;
+using Domain.DTOs.HospitalDTO;
 using Domain.Filter;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;

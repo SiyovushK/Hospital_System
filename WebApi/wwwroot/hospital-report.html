@@ -67,7 +67,7 @@
         <div id="generated">Дата формирования: —</div>
       </div>
     </header>
-
+`
     <div id="mainCard" class="card">
       <table class="stats" id="mainStats">
         <tbody>
@@ -277,10 +277,10 @@
           try {
             const errJson = await res.json();
             console.error('Server error', errJson);
-            statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
+            //statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
             render(emptyExampleDto);
           } catch (e) {
-            statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
+            //statusEl.textContent = `Сервер вернул ${res.status} — показываю пример данных.`;
             render(emptyExampleDto);
           }
           return;

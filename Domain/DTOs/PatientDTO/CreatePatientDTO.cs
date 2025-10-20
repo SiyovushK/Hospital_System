@@ -11,6 +11,9 @@ public class CreatePatientDTO
     [Required(ErrorMessage = "Name is required")]
     public string Name { get; set; }
 
+    [Required(ErrorMessage = "Territory Name is required")]
+    public Territories TerritoryName { get; set; }
+
     [Required(ErrorMessage = "Record Date is required")]
     public DateTime RecordDate { get; set; } = DateTime.UtcNow;
     public DiseaseType Disease { get; set; }

@@ -1,6 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
+
 namespace Domain.DTOs.PatientDTO;
 
 public class UpdatePatientDTO : CreatePatientDTO
 {
-    public DateTime? DischargeDate { get; set; }
+    [Required(ErrorMessage = "Territory Name is required")]
+    public Territories TerritoryName { get; set; }
+    public DateTime? RecoveryDate { get; set; }
 }
